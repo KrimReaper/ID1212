@@ -35,15 +35,15 @@ tillbaka till er dator.
  * @author Alexander Lundqvist
  * Created: 15.11.2022
  */
-public class Main {
+public class ChatServer {
     
     // Default constructor
-    public Main () {
+    public ChatServer () {
     
     }
 
     /**
-     * Main method with unit testing for the class.
+     * ChatServer method with unit testing for the class.
      *
      * @param args the command line arguments
      */
