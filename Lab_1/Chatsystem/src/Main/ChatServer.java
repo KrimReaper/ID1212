@@ -1,5 +1,7 @@
 package Main;
 
+import java.net.ServerSocket;
+
 /*
 Laboration 1: Socketar & Trådar
 
@@ -11,9 +13,7 @@ ChatServer: En instans av denna representerar servern. Har en tråd till var och
 en av de klienter som för närvarande är anslutna men också en tråd för att 
 lyssna efter nya inkommande anslutningar från nya klienter, dessa bör 
 representeras av en instans ClientHandler
-ChatClient: En instans av denna representerar klienten. Har två trådar, en för 
-att lyssna efter inkommande meddelanden från servern och en för att skicka 
-meddelanden till servern.
+
 
 Det finns inget krav på att hantera användarinloggning eller chattrum. Lätt och 
 enkel. Dessa är dock krav:
@@ -36,19 +36,40 @@ tillbaka till er dator.
  * Created: 15.11.2022
  */
 public class ChatServer {
+    private static int PORT;
+    private static ServerSocket serverSocket;
+    // Array med trådar för clienter??
+    // ClientHandler clientHandler = new ClientHandler();
     
-    // Default constructor
-    public ChatServer () {
-    
-    }
 
-    /**
-     * ChatServer method with unit testing for the class.
-     *
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // Unit tests go here
+        System.out.println("Initializing server...");
+        
+        /* 
+        Rudimentary error handling as we only want to run the server without
+        any errors whatsoever.
+        */
+        try{
+            /* 
+            In case we want to test running the server on other ports 
+            without having to change it in the code. 
+            */
+            if      (args.length <= 0) {PORT = 8080;}
+            else    {PORT = Integer.parseInt(args[0]);}
+            
+            /*
+            Initialize the server and start it
+            */
+            serverSocket = new ServerSocket(PORT);
+            
+            /*
+            Accept new clients with client handler thread
+            */
+            
+            
+            System.out.println("Server has been started and is running on port" + PORT);
+        }catch (Exception e){
+            System.out.println("Server could not be initialized: " + e);
+        }
     }
-
 }

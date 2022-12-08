@@ -1,18 +1,10 @@
 package Main;
 
-/*********************************** README ************************************
-*
-* Title placeholder
-* @author Alexander Lundqvist
-* Created: 22-11-2022
-*
-* About this class:
-*
-*
-* Based on:
-* <a href="">Link</a>
-*
-*******************************************************************************/
+/*
+ChatClient: En instans av denna representerar klienten. Har två trådar, en för 
+att lyssna efter inkommande meddelanden från servern och en för att skicka 
+meddelanden till servern.
+*/
 
 public class ChatClient {
     
