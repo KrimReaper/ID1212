@@ -1,32 +1,20 @@
 package Main;
 
+import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /*
 Laboration 1: Socketar & Trådar
-
-Uppgiften består i att skriva ett socket-baserat chatsystem med hjälp av 
-klasserna java.net.Socket och java.net.ServerSocket. Det kan bestå av bl.a. 
-föjande klasser, förslagsvis:
 
 ChatServer: En instans av denna representerar servern. Har en tråd till var och 
 en av de klienter som för närvarande är anslutna men också en tråd för att 
 lyssna efter nya inkommande anslutningar från nya klienter, dessa bör 
 representeras av en instans ClientHandler
 
-
-Det finns inget krav på att hantera användarinloggning eller chattrum. Lätt och 
-enkel. Dessa är dock krav:
-
 Klienter ska kunna lämna chatten utan att krascha servern.
 Om servern går ner ska klienterna ge ett meddelande istället för att krascha.
 Både klient och server ska kunna köras på olika JVM. 
-
-Testa att programmet verkligen fungerar genom att skapa en server och två 
-klienter, du kommer alltså att ha tre stycken samtidiga javaprogram som körs. 
-Samtliga program ska kunna köras från olika datorer, detta kan ni testa genom 
-att använda t ex ssh:a mot t ex student-shell.sys.kth.se för att ansluta 
-tillbaka till er dator.
 */
 
 /**
@@ -35,41 +23,65 @@ tillbaka till er dator.
  * @author Alexander Lundqvist
  * Created: 15.11.2022
  */
-public class ChatServer {
-    private static int PORT;
-    private static ServerSocket serverSocket;
-    // Array med trådar för clienter??
-    // ClientHandler clientHandler = new ClientHandler();
+public class ChatServer {    
+    /*
+    Parse the command line argument. If it does not exist or it is malformed,
+    then use the default port. Default port might have to be changed depending 
+    on the machine the server is running on.
+    */
+    private static int setPortNumber(String[] args) {
+        int portNumber = 8080; // Default port
+        if (args.length > 1) {
+            System.out.println("Too many arguments! Using default port instead.");
+        }
+        if (args.length == 1) {
+            try {
+                portNumber = Integer.parseInt(args[0]);
+            } catch(NumberFormatException exception) {
+                System.out.println("Malformed port number! Using default port instead.");
+            }
+        }
+        return portNumber;
+    }
     
-
-    public static void main(String[] args) {
-        System.out.println("Initializing server...");
+    /**
+     * Main server process.
+     * @param args[0] is the port number
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = null;
+        int portNumber = setPortNumber(args); 
+        int userId = 11; // Might remove
+        
         
         /* 
-        Rudimentary error handling as we only want to run the server without
-        any errors whatsoever.
+        Initialize the server and start it.
         */
-        try{
-            /* 
-            In case we want to test running the server on other ports 
-            without having to change it in the code. 
-            */
-            if      (args.length <= 0) {PORT = 8080;}
-            else    {PORT = Integer.parseInt(args[0]);}
-            
-            /*
-            Initialize the server and start it
-            */
-            serverSocket = new ServerSocket(PORT);
-            
-            /*
-            Accept new clients with client handler thread
-            */
-            
-            
-            System.out.println("Server has been started and is running on port" + PORT);
-        }catch (Exception e){
-            System.out.println("Server could not be initialized: " + e);
+        try {
+            System.out.println("Initializing server...");
+            serverSocket = new ServerSocket(portNumber);
+            System.out.println("Server has been started and is running on port " + portNumber);
+        } catch (IOException exception) {
+            System.err.println("Error starting server: " + exception);
+            System.exit(1);
+        }  
+        
+        /*
+        Accept new clients with client handler threads.
+        */
+        while (true) {
+            try {
+                Socket clientConnection = serverSocket.accept();
+                System.out.println("Accepted connection from: " + clientConnection.getInetAddress());
+                ClientHandler client = new ClientHandler(clientConnection, userId);
+                client.start();
+                userId++;
+                
+            } catch (Exception exception) {
+                System.err.println("Server error: " + exception);
+                System.exit(1);
+            }  
         }
     }
 }

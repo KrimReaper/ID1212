@@ -6,17 +6,21 @@ att lyssna efter inkommande meddelanden från servern och en för att skicka
 meddelanden till servern.
 */
 
-public class ChatClient {
+/**
+ * About this class:
+ *
+ * @author Alexander Lundqvist
+ * Created: 15.11.2022
+ */
+public class ChatClient implements Runnable{
     
-    // Default constructor
+
     public ChatClient() {
     }
-
-    /**
-     * Main method with unit testing for the class.
-     * @param args takes no input arguments
-     */    
-    public static void main(String[] args) {
-        
+    
+    
+    
+    public void run() {
+        System.out.println("Write a message then hit enter. To exit, enter /quit.");
     }
 }
