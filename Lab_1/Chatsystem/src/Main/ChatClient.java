@@ -7,19 +7,26 @@ meddelanden till servern.
 */
 
 /**
- * About this class:
+ * This class represents the client/program/interface that allows the user to 
+ * connect and interact with the chat server.
  *
- * @author Alexander Lundqvist
+ * @author Alexander Lundqvist & Ramin Shojaei
  * Created: 15.11.2022
  */
 public class ChatClient implements Runnable{
     
-
+    /**
+     * 
+     */
     public ChatClient() {
     }
     
     
-    
+
+    /**
+     * 
+     */
+    @Override
     public void run() {
         System.out.println("Write a message then hit enter. To exit, enter /quit.");
     }
