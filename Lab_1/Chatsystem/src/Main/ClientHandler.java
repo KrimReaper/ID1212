@@ -2,9 +2,7 @@ package Main;
 
 import java.io.*;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.ListIterator;
 
 /**
@@ -24,62 +22,77 @@ public class ClientHandler extends Thread{
     private static ArrayList<ClientHandler> clientList; // This holds all other active clients
           
     /**
-     * 
-     * @param clientConnection
-     * @param clientList
-     * @param userId
+     * Creates an instance of the client handler. 
+     * @param socket is the socket of the client
+     * @param clientList the list with all active clients
+     * @param userId a unique number to create the complete user ID with
      * @throws IOException 
      */
-    public ClientHandler(Socket clientConnection, ArrayList<ClientHandler> clientList, int userId) throws IOException {
+    public ClientHandler(Socket socket, ArrayList<ClientHandler> clientList, int userId) throws IOException {
         this.userId = "User" + userId;
-        this.socket = clientConnection;
+        this.socket = socket;
         this.clientList = clientList;
         this.incoming = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         this.outgoing = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-    }
-    
-    // Vet inte om den ska va här
-    private static String getTimeStamp() {
-        //Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-        String timeStamp = "[" + formatter.format(new Date()) + "]";
-        return timeStamp;
-    } 
-    
-    // Testa synchronized
-    public static synchronized void sendMessage(String message) {
-        ListIterator<ClientHandler> iterator = clientList.listIterator();
-    }
-    
-    // Den här ska haa två trådar? Är det bara den här som körs när man kallar på tråden från server?
+        
+    }    
     
     /**
-     * 
+     * Sends the message to the other clients. Uses synchronization so that the
+     * chat log behaves the same for every client?
+     * @param message is the message to be sent
+     */
+    public static synchronized void broadcast(String message) {
+        synchronized (clientList) {
+            ListIterator<ClientHandler> iterator = clientList.listIterator();
+            ClientHandler current;
+            while (iterator.hasNext()){
+                try {
+                    current = iterator.next();
+                    current.outgoing.writeUTF(message);
+                    current.outgoing.flush();
+                }
+                catch (IOException exception) {
+                    System.err.println("There was an error when sending the message: " + exception.getMessage());
+                    exception.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    /**
+     * This thread Listens for incoming messages from the user and then broadcast
+     * it to all other users. Handles client disconnect.
      */
     @Override
     public void run() {
         try {
-            this.clientList.add(this);
+            // Welcome the user and display the username
+            this.outgoing.writeUTF("Welcome, you are now known as " + this.userId);
+            this.outgoing.flush();
+            
             String message;
             while (true) {
-                message = incoming.readUTF();
+                message = this.incoming.readUTF();
                 if (message.startsWith("/quit")) {
-                    // User quits
+                    break; // Jumps to finally clause
                 }
                 else {
-                    sendMessage(getTimeStamp() + " " + this.userId + ": " + message);
+                    broadcast(this.userId + ": " + message);
                 }
             }
             
         } catch (IOException exception) {
-            System.err.println("Client handler error: " + exception);
+            System.err.println("Client handler error: " + exception.getMessage());
+            exception.printStackTrace();
         } finally {
             clientList.remove(this);
-            sendMessage(getTimeStamp() + " User" + userId + " has left the chat...");
+            broadcast(this.userId + " has left the chat...");
             try {
-                socket.close();
+                this.socket.close();
             } catch (IOException exception) {
-                System.err.println("Could not close client handler socket: " + exception);
+                System.err.println("Could not close client socket: " + exception.getMessage());
+                //exception.printStackTrace();
             }
         }
     }

@@ -6,12 +6,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 /**
- * This class represents a simple multi-threaded server 
+ * This class represents a simple multi-threaded chat server. 
  *
  * @author Alexander Lundqvist & Ramin Shojaei
  * Created: 15.11.2022
  */
 public class ChatServer {    
+    private static final int portNumber = 8420; // Safe to use https://www.speedguide.net/port.php?port=8420
     
     /**
      * Main server process.
@@ -20,37 +21,36 @@ public class ChatServer {
      */
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
-        int portNumber = 8420; // Safe to use https://www.speedguide.net/port.php?port=8420
         int userId = 1; // Simple user identifier
-        ArrayList<ClientHandler> clientList = new ArrayList<ClientHandler>();
+        ArrayList<ClientHandler> clientList = new ArrayList<ClientHandler>(); // Holds all active client threads
         
-        /* 
-        Initialize the server and start it.
-        */
         try {
             System.out.println("Initializing server...");
             serverSocket = new ServerSocket(portNumber);
             System.out.println("Server has been started and is running on port " + portNumber);
         } catch (IOException exception) {
-            System.err.println("Error starting server: " + exception);
+            System.err.println("Error starting server: " + exception.getMessage());
+            exception.printStackTrace();
             System.exit(1);
         }  
         
         /*
-        Accept new clients with client handler threads.
+        The thread that listens for new connections and assigning a client
+        handler thread to each succesful connection.
         */
         while (true) {
             System.out.println("Listening for connection request...");
-            try (Socket clientConnection = serverSocket.accept()) { 
-                System.out.println("Accepted connection from: " + clientConnection.getInetAddress());
+            try (Socket clientSocket = serverSocket.accept()) { 
+                System.out.println("Accepted connection from: " + clientSocket.getInetAddress());
                 System.out.println("Creating handler for this client");
-                ClientHandler client = new ClientHandler(clientConnection, clientList, userId);
-                //clientList.add(client);
+                ClientHandler client = new ClientHandler(clientSocket, clientList, userId);
+                clientList.add(client);
                 client.start();
                 userId++;
                 
             } catch (Exception exception) {
-                System.err.println("Server error: " + exception);
+                System.err.println("Server error: " + exception.getMessage());
+                exception.printStackTrace();
                 System.exit(1);
             }  
         }
