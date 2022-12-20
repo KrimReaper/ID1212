@@ -68,12 +68,12 @@ public class ClientHandler extends Thread{
     public void run() {
         try {
             // Welcome the user and display the username
-            //this.outgoing.writeUTF("Welcome, you are now known as " + this.userId);
-            //this.outgoing.flush();
+            String welcome = "Welcome, you are now known as " + this.userId;
+            this.outgoing.writeUTF(welcome);
+            this.outgoing.flush();
             
-            String message;
-            while (true) {
-                message = this.incoming.readUTF();
+            while (!this.socket.isClosed()) {
+                String message = this.incoming.readUTF();
                 if (message.startsWith("/quit")) {
                     break; // Jumps to finally clause
                 }
@@ -88,12 +88,14 @@ public class ClientHandler extends Thread{
         } finally {
             clientList.remove(this);
             broadcast(this.userId + " has left the chat...");
-            try {
-                this.socket.close();
-            } catch (IOException exception) {
-                System.err.println("Could not close client socket: " + exception.getMessage());
-                //exception.printStackTrace();
-            }
+            if (!this.socket.isClosed()) {
+                try {
+                    this.socket.close();
+                } catch (IOException exception) {
+                    System.err.println("Could not close client socket: " + exception.getMessage());
+                    exception.printStackTrace();
+                }
+            } 
         }
     }
 }

@@ -48,17 +48,14 @@ public class ChatServer {
                 clientList.add(client);
                 client.start();
                 
-                
             } catch (Exception exception) {
                 System.err.println("Server error: " + exception.getMessage());
                 exception.printStackTrace();
-                
                 try {
                     serverSocket.close();
-                } catch (IOException exception2) {
-                    System.err.println("Could not close client socket: " + exception2.getMessage());
-                    exception2.printStackTrace();
-                    System.exit(1);
+                } catch (IOException shutdown) {
+                    System.err.println("Could not close server socket: " + shutdown.getMessage());
+                    shutdown.printStackTrace();
                 }
             }  
         }

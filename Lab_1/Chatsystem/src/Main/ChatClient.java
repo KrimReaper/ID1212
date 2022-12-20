@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 /**
  * This class represents the client/program/interface that allows the user to 
@@ -28,6 +27,7 @@ public class ChatClient {
             System.out.println("Connecting to the chat...");
             socket = new Socket(hostname, portNumber);
             System.out.println("You are now connected to the chat!");
+            System.out.println("Write a message then hit enter to send. Type /quit to exit the application.");
             
         } catch (IOException exception) {
             System.err.println("Could not connect to chat server: " + exception.getMessage());
@@ -44,17 +44,14 @@ public class ChatClient {
         } catch (Exception exception) {
             System.err.println("Client thread error: " + exception.getMessage());
             exception.printStackTrace();
-        } finally {
             try {
                 socket.close();
-            } catch (IOException exception) {
-                System.err.println("Could not close client socket: " + exception.getMessage());
-                exception.printStackTrace();
+            } catch (IOException shutdown) {
+                System.err.println("Could not close client socket: " + shutdown.getMessage());
+                shutdown.printStackTrace();
             }
-            System.out.println("You have disconnected from the chat!");
         }
-    }
-    
+    }  
 }
 
 /**
@@ -82,19 +79,30 @@ class ClientReader implements Runnable {
     @Override
     public void run(){
         try {
-            String message = null;
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                message = userInput.readLine();
+            while (!this.socket.isClosed() && !this.socket.isOutputShutdown()) {
+                String message = userInput.readLine();
+                if (message.isEmpty()) {
+                    continue;
+                }
                 outgoing.writeUTF(message);
                 outgoing.flush();
                 if (message.equals("/quit")) {
                     break;
                 }
-            }
+            }      
         } catch (IOException exception) {
-            System.err.println("Error sending message: " + exception.getMessage());
-            exception.printStackTrace();
+            System.err.println("Client input error: " + exception.getMessage());
+            exception.printStackTrace();       
+        } finally {
+            System.out.println("You have been disconnected from the chat!"); 
+            if (!this.socket.isClosed()) {
+                try {
+                    this.socket.close();
+                } catch (IOException exception) {
+                    System.err.println("Could not close client socket: " + exception.getMessage());
+                }
+            } 
         }
     }
 }
@@ -134,14 +142,15 @@ class ClientWriter implements Runnable {
     
     @Override
     public void run(){
-        String message = null;
         try { 
-            while (true) {
-                message = incoming.readUTF();
+            while (!this.socket.isClosed() && !this.socket.isInputShutdown()) {
+                String message = incoming.readUTF();
                 System.out.println(getTimestamp() + " " + message);
             }
+        } catch (EOFException exception) {
+            // Unfortunate side effect from DataInputStream is that we have to catch this
         } catch (IOException exception) {
-            System.err.println("Error recieving messages: " + exception.getMessage());
+            System.err.println("Client output error: " + exception.getMessage());
             exception.printStackTrace();
         }
     }
