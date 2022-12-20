@@ -68,8 +68,8 @@ public class ClientHandler extends Thread{
     public void run() {
         try {
             // Welcome the user and display the username
-            this.outgoing.writeUTF("Welcome, you are now known as " + this.userId);
-            this.outgoing.flush();
+            //this.outgoing.writeUTF("Welcome, you are now known as " + this.userId);
+            //this.outgoing.flush();
             
             String message;
             while (true) {

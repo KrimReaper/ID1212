@@ -13,7 +13,9 @@ import java.util.ArrayList;
  */
 public class ChatServer {    
     private static final int portNumber = 8420; // Safe to use https://www.speedguide.net/port.php?port=8420
-    
+    private static ArrayList<ClientHandler> clientList = new ArrayList<ClientHandler>(); // Holds all active client threads
+    private static int userId = 1; // Simple user identifier
+     
     /**
      * Main server process.
      * @param args should empty
@@ -21,9 +23,6 @@ public class ChatServer {
      */
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
-        int userId = 1; // Simple user identifier
-        ArrayList<ClientHandler> clientList = new ArrayList<ClientHandler>(); // Holds all active client threads
-        
         try {
             System.out.println("Initializing server...");
             serverSocket = new ServerSocket(portNumber);
@@ -40,18 +39,27 @@ public class ChatServer {
         */
         while (true) {
             System.out.println("Listening for connection request...");
-            try (Socket clientSocket = serverSocket.accept()) { 
+            try {
+                Socket clientSocket = serverSocket.accept();
                 System.out.println("Accepted connection from: " + clientSocket.getInetAddress());
                 System.out.println("Creating handler for this client");
                 ClientHandler client = new ClientHandler(clientSocket, clientList, userId);
+                userId++;
                 clientList.add(client);
                 client.start();
-                userId++;
+                
                 
             } catch (Exception exception) {
                 System.err.println("Server error: " + exception.getMessage());
                 exception.printStackTrace();
-                System.exit(1);
+                
+                try {
+                    serverSocket.close();
+                } catch (IOException exception2) {
+                    System.err.println("Could not close client socket: " + exception2.getMessage());
+                    exception2.printStackTrace();
+                    System.exit(1);
+                }
             }  
         }
     }

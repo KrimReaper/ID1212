@@ -88,8 +88,8 @@ class ClientReader implements Runnable {
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
                 message = userInput.readLine();
-                this.outgoing.writeUTF(message);
-                this.outgoing.flush();
+                outgoing.writeUTF(message);
+                outgoing.flush();
                 if (message == "/quit") {
                     break;
                 }
@@ -116,7 +116,7 @@ class ClientWriter implements Runnable {
     public ClientWriter(Socket socket){
         this.socket = socket;
         try {
-            this.incoming = new DataInputStream(new BufferedInputStream(this.socket.getInputStream()));
+            incoming = new DataInputStream(new BufferedInputStream(this.socket.getInputStream()));
         } catch (IOException exception) {
             System.err.println("Error getting input stream: " + exception.getMessage());
             exception.printStackTrace();
@@ -139,7 +139,7 @@ class ClientWriter implements Runnable {
         String message = null;
         try { 
             while (true) {
-                message = this.incoming.readUTF();
+                message = incoming.readUTF();
                 System.out.println(getTimestamp() + " " + message);
             }
         } catch (IOException exception) {
