@@ -36,8 +36,6 @@ public class ChatClient {
         
         // If connection is ok, then we can try starting the stream threads.
         try {
-            //Runnable clientReader = new ClientReader(socket);
-            //Runnable clientWriter = new ClientWriter(socket);
             Thread clientReaderThread = new Thread(new ClientReader(socket));
             Thread clientWriterThread = new Thread(new ClientWriter(socket));
             clientReaderThread.start();
@@ -51,7 +49,7 @@ public class ChatClient {
                 socket.close();
             } catch (IOException exception) {
                 System.err.println("Could not close client socket: " + exception.getMessage());
-                //exception.printStackTrace();
+                exception.printStackTrace();
             }
             System.out.println("You have disconnected from the chat!");
         }
@@ -90,7 +88,7 @@ class ClientReader implements Runnable {
                 message = userInput.readLine();
                 outgoing.writeUTF(message);
                 outgoing.flush();
-                if (message == "/quit") {
+                if (message.equals("/quit")) {
                     break;
                 }
             }
