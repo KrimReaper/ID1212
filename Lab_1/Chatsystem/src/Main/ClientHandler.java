@@ -72,9 +72,9 @@ public class ClientHandler extends Thread{
             this.outgoing.writeUTF(welcome);
             this.outgoing.flush();
             
-            while (!this.socket.isClosed()) {
+            while (!this.socket.isClosed() && this.socket != null) {
                 String message = this.incoming.readUTF();
-                if (message.startsWith("/quit")) {
+                if (message.equals("/quit")) {
                     break; // Jumps to finally clause
                 }
                 else {
@@ -88,7 +88,7 @@ public class ClientHandler extends Thread{
         } finally {
             clientList.remove(this);
             broadcast(this.userId + " has left the chat...");
-            if (!this.socket.isClosed()) {
+            if (!this.socket.isClosed() && this.socket != null) {
                 try {
                     this.socket.close();
                 } catch (IOException exception) {

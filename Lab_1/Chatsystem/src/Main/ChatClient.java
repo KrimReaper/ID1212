@@ -41,15 +41,20 @@ public class ChatClient {
             clientReaderThread.start();
             clientWriterThread.start();
             
+            clientReaderThread.join();
+            
         } catch (Exception exception) {
             System.err.println("Client thread error: " + exception.getMessage());
             exception.printStackTrace();
-            try {
-                socket.close();
-            } catch (IOException shutdown) {
-                System.err.println("Could not close client socket: " + shutdown.getMessage());
-                shutdown.printStackTrace();
-            }
+        } finally {
+            System.out.println("You have been disconnected from the chat!"); 
+            if (!socket.isClosed() && socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException exception) {
+                    System.err.println("Could not close client socket: " + exception.getMessage());
+                }
+            } 
         }
     }  
 }
@@ -80,13 +85,13 @@ class ClientReader implements Runnable {
     public void run(){
         try {
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            while (!this.socket.isClosed() && !this.socket.isOutputShutdown()) {
+            while (!this.socket.isClosed() && this.socket != null && this.outgoing != null) {
                 String message = userInput.readLine();
                 if (message.isEmpty()) {
                     continue;
                 }
-                outgoing.writeUTF(message);
-                outgoing.flush();
+                this.outgoing.writeUTF(message);
+                this.outgoing.flush();
                 if (message.equals("/quit")) {
                     break;
                 }
@@ -94,16 +99,7 @@ class ClientReader implements Runnable {
         } catch (IOException exception) {
             System.err.println("Client input error: " + exception.getMessage());
             exception.printStackTrace();       
-        } finally {
-            System.out.println("You have been disconnected from the chat!"); 
-            if (!this.socket.isClosed()) {
-                try {
-                    this.socket.close();
-                } catch (IOException exception) {
-                    System.err.println("Could not close client socket: " + exception.getMessage());
-                }
-            } 
-        }
+        } 
     }
 }
 
@@ -122,7 +118,7 @@ class ClientWriter implements Runnable {
     public ClientWriter(Socket socket){
         this.socket = socket;
         try {
-            incoming = new DataInputStream(new BufferedInputStream(this.socket.getInputStream()));
+            this.incoming = new DataInputStream(new BufferedInputStream(this.socket.getInputStream()));
         } catch (IOException exception) {
             System.err.println("Error getting input stream: " + exception.getMessage());
             exception.printStackTrace();
@@ -143,15 +139,18 @@ class ClientWriter implements Runnable {
     @Override
     public void run(){
         try { 
-            while (!this.socket.isClosed() && !this.socket.isInputShutdown()) {
-                String message = incoming.readUTF();
+            while (!this.socket.isClosed() && this.socket != null && this.incoming != null) {
+                String message = this.incoming.readUTF(); // Error here...
                 System.out.println(getTimestamp() + " " + message);
             }
+            
         } catch (EOFException exception) {
             // Unfortunate side effect from DataInputStream is that we have to catch this
         } catch (IOException exception) {
+            System.out.println("You have been disconnected from the chat!"); 
             System.err.println("Client output error: " + exception.getMessage());
             exception.printStackTrace();
         }
     }
 }
+

@@ -48,7 +48,7 @@ public class ChatServer {
                 clientList.add(client);
                 client.start();
                 
-            } catch (Exception exception) {
+            } catch (IOException exception) {
                 System.err.println("Server error: " + exception.getMessage());
                 exception.printStackTrace();
                 try {
