@@ -19,7 +19,6 @@ public class ChatServer {
     /**
      * Main server process.
      * @param args should empty
-     * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
@@ -27,19 +26,13 @@ public class ChatServer {
             System.out.println("Initializing server...");
             serverSocket = new ServerSocket(portNumber);
             System.out.println("Server has been started and is running on port " + portNumber);
-        } catch (IOException exception) {
-            System.err.println("Error starting server: " + exception.getMessage());
-            exception.printStackTrace();
-            System.exit(1);
-        }  
-        
-        /*
-        The thread that listens for new connections and assigning a client
-        handler thread to each succesful connection.
-        */
-        while (true) {
-            System.out.println("Listening for connection request...");
-            try {
+            
+            /*
+            The thread that listens for new connections and assigning a client
+            handler thread to each succesful connection.
+            */
+            while (true) {
+                System.out.println("Listening for connection request...");
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Accepted connection from: " + clientSocket.getInetAddress());
                 System.out.println("Creating handler for this client");
@@ -47,17 +40,14 @@ public class ChatServer {
                 userId++;
                 clientList.add(client);
                 client.start();
-                
-            } catch (Exception exception) {
-                System.err.println("Server error: " + exception.getMessage());
-                exception.printStackTrace();
-                try {
-                    serverSocket.close();
-                } catch (IOException shutdown) {
-                    System.err.println("Could not close server socket: " + shutdown.getMessage());
-                    shutdown.printStackTrace();
-                }
-            }  
-        }
+            }
+            
+        } catch (IOException exception) {
+            System.err.println("Server error: " + exception.getMessage());
+            exception.printStackTrace();
+            serverSocket.close();
+            System.exit(1);
+        }  
+
     }
 }

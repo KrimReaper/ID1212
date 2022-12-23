@@ -54,7 +54,6 @@ public class ClientHandler extends Thread{
                 }
                 catch (IOException exception) {
                     System.err.println("There was an error when sending the message: " + exception.getMessage());
-                    exception.printStackTrace();
                 }
             }
         }
@@ -68,32 +67,31 @@ public class ClientHandler extends Thread{
     public void run() {
         try {
             // Welcome the user and display the username
-            String welcome = "Welcome, you are now known as " + this.userId;
+            String welcome = "Welcome, you are now known as " + this.userId + "!";
             this.outgoing.writeUTF(welcome);
             this.outgoing.flush();
             
+            String message;
             while (!this.socket.isClosed()) {
-                String message = this.incoming.readUTF();
-                if (message.startsWith("/quit")) {
+                message = this.incoming.readUTF();
+                if (message.equals("/quit")) {
                     break; // Jumps to finally clause
                 }
                 else {
                     broadcast(this.userId + ": " + message);
                 }
             }
-            
         } catch (IOException exception) {
             System.err.println("Client handler error: " + exception.getMessage());
-            exception.printStackTrace();
+            // exception.printStackTrace();
         } finally {
             clientList.remove(this);
             broadcast(this.userId + " has left the chat...");
-            if (!this.socket.isClosed()) {
+            if (!this.socket.isClosed() && this.socket != null) {
                 try {
                     this.socket.close();
                 } catch (IOException exception) {
                     System.err.println("Could not close client socket: " + exception.getMessage());
-                    exception.printStackTrace();
                 }
             } 
         }
