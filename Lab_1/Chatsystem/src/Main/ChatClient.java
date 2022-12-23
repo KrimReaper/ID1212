@@ -2,6 +2,7 @@ package Main;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -21,7 +22,7 @@ public class ChatClient {
      * Main client process.
      * @param args should be empty
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Socket socket = null;
         try {
             System.out.println("Connecting to the chat...");
@@ -29,32 +30,22 @@ public class ChatClient {
             System.out.println("You are now connected to the chat!");
             System.out.println("Write a message then hit enter to send. Type /quit to exit the application.");
             
-        } catch (IOException exception) {
-            System.err.println("Could not connect to chat server: " + exception.getMessage());
-            exception.printStackTrace();
-        }
-        
-        // If connection is ok, then we can try starting the stream threads.
-        try {
             Thread clientReaderThread = new Thread(new ClientReader(socket));
             Thread clientWriterThread = new Thread(new ClientWriter(socket));
             clientReaderThread.start();
             clientWriterThread.start();
             
-            clientReaderThread.join();
+            // Only clean exit we could think of in case of server shutdown
+            clientWriterThread.join();
+            clientReaderThread.interrupt();
+            System.exit(0);
             
-        } catch (Exception exception) {
-            System.err.println("Client thread error: " + exception.getMessage());
+        } catch (UnknownHostException exception) {
+            System.err.println("Could not connect to chat server: " + exception.getMessage());
             exception.printStackTrace();
-        } finally {
-            System.out.println("You have been disconnected from the chat!"); 
-            if (!socket.isClosed() && socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException exception) {
-                    System.err.println("Could not close client socket: " + exception.getMessage());
-                }
-            } 
+        } catch (IOException exception) {
+            System.err.println("I/O error: " + exception.getMessage());
+            exception.printStackTrace();
         }
     }  
 }
@@ -66,6 +57,7 @@ public class ChatClient {
 class ClientReader implements Runnable {
     private Socket socket;
     private DataOutputStream outgoing; // Used for sending network messages.
+    private BufferedReader userInput;
     
     /**
      * Constructor.
@@ -75,6 +67,7 @@ class ClientReader implements Runnable {
         this.socket = socket;
         try {
             this.outgoing = new DataOutputStream(new BufferedOutputStream(this.socket.getOutputStream()));
+            this.userInput = new BufferedReader(new InputStreamReader(System.in));
         } catch (IOException exception) {
             System.err.println("Error getting output stream: " + exception.getMessage());
             exception.printStackTrace();
@@ -84,9 +77,9 @@ class ClientReader implements Runnable {
     @Override
     public void run(){
         try {
-            BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            while (!this.socket.isClosed() && this.socket != null && this.outgoing != null) {
-                String message = userInput.readLine();
+            String message;
+            while (!this.socket.isClosed() && this.socket != null) {
+                message = this.userInput.readLine();
                 if (message.isEmpty()) {
                     continue;
                 }
@@ -95,11 +88,20 @@ class ClientReader implements Runnable {
                 if (message.equals("/quit")) {
                     break;
                 }
-            }      
+            }
+            System.out.println("You have been disconnected from the chat!");
         } catch (IOException exception) {
-            System.err.println("Client input error: " + exception.getMessage());
-            exception.printStackTrace();       
-        } 
+            //System.err.println("Client input error: " + exception.getMessage());
+            //exception.printStackTrace();
+        } finally {
+            if (!this.socket.isClosed() && this.socket != null) {
+                try {
+                    this.socket.close();
+                } catch (IOException exception) {
+                    System.err.println("Could not close client socket: " + exception.getMessage());
+                }
+            } 
+        }
     }
 }
 
@@ -121,7 +123,6 @@ class ClientWriter implements Runnable {
             this.incoming = new DataInputStream(new BufferedInputStream(this.socket.getInputStream()));
         } catch (IOException exception) {
             System.err.println("Error getting input stream: " + exception.getMessage());
-            exception.printStackTrace();
         }
     }
     
@@ -138,18 +139,26 @@ class ClientWriter implements Runnable {
     
     @Override
     public void run(){
-        try { 
-            while (!this.socket.isClosed() && this.socket != null && this.incoming != null) {
-                String message = this.incoming.readUTF(); // Error here...
+        try {
+            String message;
+            while (!this.socket.isClosed() && this.socket != null) {
+                message = this.incoming.readUTF();
                 System.out.println(getTimestamp() + " " + message);
             }
-            
         } catch (EOFException exception) {
             // Unfortunate side effect from DataInputStream is that we have to catch this
         } catch (IOException exception) {
-            System.out.println("You have been disconnected from the chat!"); 
-            System.err.println("Client output error: " + exception.getMessage());
-            exception.printStackTrace();
+            //System.err.println("Client output error: " + exception.getMessage());
+            //exception.printStackTrace();
+            System.out.println("Server has closed the connection!");
+        } finally {
+            if (!this.socket.isClosed() && this.socket != null) {
+                try {
+                    this.socket.close();
+                } catch (IOException exception) {
+                    System.err.println("Could not close client socket: " + exception.getMessage());
+                }
+            } 
         }
     }
 }
