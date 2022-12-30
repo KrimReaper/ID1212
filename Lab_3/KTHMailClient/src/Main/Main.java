@@ -1,16 +1,13 @@
-package controller;
+package Main;
 
 /**
- * About this class:
+ * This class represents a program that can connect to a @kth.se account,
+ * list the contents and then send and receive mail.
  *
  * @author Alexander Lundqvist
  */
-public class Controller {
+public class Main {
     
-    // Default constructor
-    public Controller () {
-    
-    }
 
     /**
      * Main method with unit testing for the class.
