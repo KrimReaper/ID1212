@@ -1,5 +1,9 @@
 package controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -15,10 +19,19 @@ import model.Model;
 public class RequestHandler implements Runnable{
     private Socket socket;
     private Model model;
+    private BufferedReader clientRequest;
+    private PrintStream serverResponse;
+            
     
-    
-    public RequestHandler(Socket socket) {
+    public RequestHandler(Model model, Socket socket) {
         this.socket = socket;
+        this.model = model;
+        try {
+            this.clientRequest = new BufferedReader( new InputStreamReader(socket.getInputStream()));
+            this.serverResponse = new PrintStream(socket.getOutputStream());
+        } catch (IOException exception) {
+            System.err.println("There was an error creating the handler: " + exception.getMessage());
+        }
     }
        
     /**
@@ -35,6 +48,8 @@ public class RequestHandler implements Runnable{
         random.nextBytes(buffer);
         return encoder.encodeToString(buffer);
     }
+    
+    
     
     private void handleGETrequest() {
         

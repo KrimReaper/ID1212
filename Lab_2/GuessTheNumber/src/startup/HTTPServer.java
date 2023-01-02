@@ -1,10 +1,13 @@
 package startup;
 
+import controller.Controller;
+import controller.RequestHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import model.Model;
+import view.View;
 
 
 /**
@@ -15,7 +18,8 @@ import model.Model;
  */
 public class HTTPServer {   
     private static final int port = 8080; // Change this if needed
-    private static ArrayList<ClientHandler>
+    private static ArrayList<RequestHandler> controllers;
+    private static ArrayList<View> views;
     
     /**
     * Main method used to start the server and application components.
@@ -28,6 +32,8 @@ public class HTTPServer {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server has been started and is running on port " + port);
             Model model = new Model();
+            Controller controller = new Controller(model);
+            View view = new View(controller);
             
             /*
             The thread that listens for new connections and creates new game sessions
@@ -37,8 +43,7 @@ public class HTTPServer {
                 System.out.println("Listening for connection request...");
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Accepted connection from: " + clientSocket.getInetAddress());
-                
-                
+                controller.createNewHandler(clientSocket);               
             }
             
         } catch (IOException exception) {

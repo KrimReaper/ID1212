@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import controller.RequestHandler;
 
 /**
@@ -8,10 +9,15 @@ import controller.RequestHandler;
  * @author Alexander Lundqvist & Ramin Shojaei
  */
 public class View {
-    private final RequestHandler controller;
+    private String cookie;
+    private final Controller controller;
     
-    public View (RequestHandler controller) {
+    public View (Controller controller) {
         this.controller = controller;
+    }
+    
+    public void displayResponse() {
+        
     }
 
 }
