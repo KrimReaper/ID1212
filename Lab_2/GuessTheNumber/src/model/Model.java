@@ -29,11 +29,10 @@ public class Model {
     
     /**
      * Set function that adds a new <Cookie, GameSession> pair to the model.
-     * @param cookie is the identifier for the client.
-     * @param session is the GameSession tied to the specified cookie. 
+     * @param cookie is the identifier for the client. 
      */
-    public void addSession(String cookie, GameSession session) {
-        sessions.put(cookie, session);
+    public void addSession(String cookie) {
+        sessions.put(cookie, new GameSession(cookie));
     }
     
     /**
