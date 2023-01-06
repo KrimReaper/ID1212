@@ -8,6 +8,7 @@ import java.util.Random;
  * @author Alexander Lundqvist & Ramin Shojaei
  */
 public class GameSession {
+    private final String cookie;
     private Random random;
     private int amountOfGuesses;
     private int secretNumber;
@@ -16,7 +17,8 @@ public class GameSession {
      * Initializes the game session object.
      * @param cookie is the cookie
      */
-    public GameSession() {
+    public GameSession(String cookie) {
+        this.cookie = cookie;
         this.random = new Random();
         this.amountOfGuesses = 0;
         this.secretNumber = generateNumber();        
@@ -36,6 +38,14 @@ public class GameSession {
      */
     public int getSecretNumber() {
         return this.amountOfGuesses;
+    }
+    
+    /**
+     * Gets the cookie for this session.
+     * @return the cookie
+     */
+    public String getCookie() {
+        return this.cookie;
     }
     
     /**
