@@ -1,24 +1,25 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import model.GuessBean;
 
 /**
- * Servlet that acts as a controller for the application. Handles incoming 
- * HTTP GET requests and creates the HTTP response.
  *
- * @author Alexander Lundqvist & Ramin Shojaei
+ * @author Alexander
  */
-@WebServlet(name = "HTTPHandler", urlPatterns = {"/HTTPHandler"})
-public class HTTPHandler extends HttpServlet {
+public class Controller extends HttpServlet {
+
     /**
-     * Processes requests for HTTP <code>GET</code> method.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -28,26 +29,21 @@ public class HTTPHandler extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        HttpSession session = request.getSession(true);
-        GuessBean bean = new GuessBean();
-        
-        // If the client already have an active game and it is not finished
-        if ((session.getAttribute("GuessBean") != null) && !(session.getAttribute("Answer").equals("CORRECT"))) {
-            bean = (GuessBean) session.getAttribute("GuessBean");
+        try ( PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet Controller</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet Controller at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-        
-        // Perform game logic
-        String guess = request.getParameter("guess");
-        String answer = bean.handleGuess(guess);
-        int amount = bean.getAmountOfGuesses();
-        
-        // Update the current session and send the response
-        session.setAttribute("Answer", answer);
-        session.setAttribute("AmountOfGuesses", amount);
-        session.setAttribute("GuessBean", bean);
-	response.sendRedirect("index.jsp");
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -61,7 +57,7 @@ public class HTTPHandler extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -75,5 +71,15 @@ public class HTTPHandler extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 
 }

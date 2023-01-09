@@ -8,9 +8,6 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="controller.*" %>
-<%@page import="model.*" %>
-<jsp:useBean class="model.GuessBean" id="guessBean" scope="session"></jsp:useBean>
 
 <!DOCTYPE html>
 <html>
@@ -20,6 +17,7 @@
     </head>
     <body>
         <div id="message">
+            <%-- Conditional rendering based on session attributes --%>
             <%  
                 if (request.getSession(false).getAttribute("GuessBean") == null) {
                     out.print("Welcome to the Number Guess Game. Guess a number between 1 and 100.");
@@ -52,6 +50,7 @@
                 }
             %>
         </div>
+        <%-- submit calls the HTTPHandler.java method doGet() to handle the guess --%>
         <form id="form" action="HTTPHandler" method="GET" >
             <input type="text" name="guess">
             <input type="submit" value="Guess">
