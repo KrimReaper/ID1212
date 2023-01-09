@@ -21,6 +21,7 @@ public class Sender {
     private static final String SERVER = "smtp.kth.se";
     private static final int PORT = 587;
     private static String username;
+    private static String password;
     private static String receiver;
     private static String messageSend;
 
@@ -30,7 +31,7 @@ public class Sender {
         //För att kunna skriva det som efterfrågas i terminalen använder vi oss av System.console();
         Console console = System.console();
         username = console.readLine("Type your Username:  ");
-        String password = new String(console.readPassword("Your Password:  "));
+        password = new String(console.readPassword("Your Password:  "));
         receiver = console.readLine("Who do you want to send mail to?:   ");
         messageSend = console.readLine("Type your message here:   ");
 
@@ -48,7 +49,7 @@ public class Sender {
         // Initierar SMTP konversation med servern. EHLO stödjer ESMTP.
         output.println("EHLO " + SERVER);
         output.flush();
-        readingMessage(input);
+        messageReader(input);
 
         // StartTLS är ett protokollkommando
         // Används för att informera servern om att klienten vill uppgradera från osäker till säker anslutning med TLS eller SSL.
@@ -77,11 +78,11 @@ public class Sender {
 
         // EHLO commanded skrivs in nu igen efter den säkra anslutningen har skett
         output.println("EHLO " + SERVER);
-        readingMessage(input);
+        messageReader(input);
 
         // Försöker logga in (Authentication Login)
         output.println("AUTH LOGIN");
-        readingMessage(input);
+        messageReader(input);
 
         //Encodear till Base 64 format, det är en metod för att binärt data ska kunna kodas med 7 bitars ASCII-tecken
         Base64.Encoder encoder = Base64.getEncoder();
@@ -110,7 +111,7 @@ public class Sender {
         readingMsgFromServer(input);
         //Borde inte komma fler meddelanden efter vi nått 221.
         output.println("QUIT");
-        readingMessage(input);
+        messageReader(input);
 
         System.out.println("END");
         input.close();
@@ -120,7 +121,7 @@ public class Sender {
     }
     
     //Skriver ut det resulterande svaret från servern
-    public static void readingMessage(BufferedReader input) throws IOException {
+    public static void messageReader(BufferedReader input) throws IOException {
         String message;
         while ((message = input.readLine()) != null) {
             System.out.println(message);
