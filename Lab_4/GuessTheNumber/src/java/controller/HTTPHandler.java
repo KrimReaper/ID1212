@@ -1,8 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,6 +17,12 @@ import model.GuessBean;
  */
 @WebServlet(name = "HTTPHandler", urlPatterns = {"/HTTPHandler"})
 public class HTTPHandler extends HttpServlet {
+//    GuessBean bean;
+//    
+//    @Override
+//    public void init() {
+//        bean = new GuessBean();
+//    }
     
     /**
      * Processes requests for HTTP <code>GET</code> method.
@@ -32,21 +36,22 @@ public class HTTPHandler extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession(true);
-        
         GuessBean bean = new GuessBean();
         
-        if(!session.isNew()) {
+        // If the client already have an active game and it is not finished
+        if ((session.getAttribute("GuessBean") != null) && !(session.getAttribute("Answer").equals("CORRECT"))) {
             bean = (GuessBean) session.getAttribute("GuessBean");
         }
         
         String guess = request.getParameter("guess");
         String answer = bean.handleGuess(guess);
         int amount = bean.getAmountOfGuesses();
+        
         session.setAttribute("Answer", answer);
         session.setAttribute("AmountOfGuesses", amount);
         session.setAttribute("GuessBean", bean);
         
-	response.sendRedirect("Quiz.jsp");
+	response.sendRedirect("index.jsp");
     }
 
     /**
