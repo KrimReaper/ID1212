@@ -40,18 +40,18 @@ public class Receiver {
 
         
             try {
-                //För att kunna skriva det som efterfrågas i terminalen använder vi oss av System.console();
+                //För att kunna skriva det som efterfrågas i terminalen använder vi oss av System.console()
                 Console console = System.console();
                 //Skriver in användarnamn och lösenord
-                username = console.readLine("Type your Username:  ");
-                password = new String(console.readPassword("Your Password:  "));;
+                username = console.readLine("Type your Username: ");
+                password = new String(console.readPassword("Your Password: "));
                 
                 input = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
                 output = new PrintWriter(sslSocket.getOutputStream(), true);
             } 
-            catch (IOException e) {
-                System.err.println(e);
-                e.printStackTrace(); // printStackTrace är Javas verktyg för hantering av errors. Gör så man kan se vad felet är.
+            catch (IOException exception) {
+                System.err.println("Error: " + exception.getMessage());
+                //exception.printStackTrace();
             }
   
             //Referens till detta: https://www.rfc-editor.org/rfc/rfc3501#section-6.4.5
