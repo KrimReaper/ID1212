@@ -5,12 +5,16 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * TBD
+ * This class takes a @kth.se mail address and password combination and uses
+ * the Internet Message Access Protocol (IMAP) connect to the remote email account
+ * and retrieves a mail.
+ * 
+ * Reference: <a href="https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol">Wikipedia</a>
  * 
  * Settings for sending mail.
  * Server: webmail.kth.se
  * Port: 993
- * Protokoll: SSL/TLS
+ * Protocol: IMAP (SSL/TLS)
  * Authentication: Normal password
  *
  * @author Alexander Lundqvist & Ramin Shojaei
@@ -36,7 +40,7 @@ public class Receiver {
         SSLSocket sslSocket = (SSLSocket) socketFactory.createSocket(SERVER, PORT);
         // Sätter upp Socketens input- och outputstream
         BufferedReader input = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
-        PrintWriter output = new PrintWriter(new OutputStreamWriter(sslSocket.getOutputStream()));;
+        PrintWriter output = new PrintWriter(new OutputStreamWriter(sslSocket.getOutputStream()));
 
         
             try {
@@ -60,7 +64,7 @@ public class Receiver {
             System.out.println(response);  //Response från Server
 
             // Måste innehålla ett prefix "a" tillsammans med något nummer. Vi har a01 för inloggning.
-            login = "a01 LOGIN " + username + " " + password;  //logggar in mec användarnamn o lösenord
+            login = "a01 LOGIN " + username + " " + password;  //loggar in med användarnamn o lösenord
             inbox = "a02 SELECT INBOX"; //  inkorg a002
             firstMail = "a03 FETCH 1 BODY[TEXT]"; //Hämtar äldsta e-postmeddelandet i inkorgen genom detta kommando.
             logout = "999 LOGOUT"; //loggar ut

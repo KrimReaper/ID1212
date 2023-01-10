@@ -7,12 +7,17 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * TBD
+ * This class takes a @kth.se mail address, password combination, message and a 
+ * reciever email address. It then uses the Simple Mail Transfer Protocol (SMTP) 
+ * to connect to the remote email account and send the mail via the mail server 
+ * the specified recipient email address.
+ * 
+ * Reference: <a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol">Wikipedia</a>
  * 
  * Settings for receiving mail.
  * Server: smtp.kth.se
  * Port: 587
- * Protocol: STARTTLS
+ * Protocol: SMTP (STARTTLS)
  * Authentication: Normal password
  *
  * @author Alexander Lundqvist & Ramin Shojaei
