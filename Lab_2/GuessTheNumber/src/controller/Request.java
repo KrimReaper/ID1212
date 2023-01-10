@@ -108,6 +108,7 @@ public class Request {
     /**
      * This function analyses the request line to see if it is a valid HTTP
      * request and if the server can accept it.
+     * requestLineTokens = {METHOD, URI, PROTOCOL}
      * @return the status code
      */
     public int validateRequestLine() {

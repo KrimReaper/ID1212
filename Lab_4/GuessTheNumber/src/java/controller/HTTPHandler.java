@@ -17,6 +17,7 @@ import model.GuessBean;
  */
 @WebServlet(name = "HTTPHandler", urlPatterns = {"/HTTPHandler"})
 public class HTTPHandler extends HttpServlet {
+    
     /**
      * Processes requests for HTTP <code>GET</code> method.
      *

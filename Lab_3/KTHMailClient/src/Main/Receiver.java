@@ -1,3 +1,5 @@
+//package Main; // Comment out to compile and run from terminal
+
 import java.io.*;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -13,7 +15,6 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author Alexander Lundqvist & Ramin Shojaei
  */
-
 public class Receiver {
     public static final String SERVER = "webmail.kth.se";
     public static final int PORT = 993;

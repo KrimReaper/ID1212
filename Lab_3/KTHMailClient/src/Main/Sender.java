@@ -1,3 +1,10 @@
+//package Main; // Comment out to compile and run from terminal
+
+import java.io.*;
+import java.net.Socket;
+import java.util.Base64;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * TBD
@@ -10,13 +17,6 @@
  *
  * @author Alexander Lundqvist & Ramin Shojaei
  */
-import java.io.*;
-import java.net.Socket;
-import java.util.Base64;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-
-
 public class Sender {
     private static final String SERVER = "smtp.kth.se";
     private static final int PORT = 587;

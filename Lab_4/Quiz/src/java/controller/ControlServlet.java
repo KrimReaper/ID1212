@@ -1,24 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-package Controller;
+package controller;
 
+import Integration.DBhandler;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import model.UserBean;
 
 /**
- *
- * @author Overlord
+ * This servlet acts like an overarching controller for the webapplication. Since
+ * the project is so small it is not necessary to have a controller for each 
+ * logic unit.
+ * 
+ * @author Alexander Lundqvist & Ramin Shojaei
  */
-@WebServlet(name = "HTTPHandler", urlPatterns = {"/HTTPHandler"})
-public class HTTPHandler extends HttpServlet {
-
+@WebServlet(name = "Controller", urlPatterns = {"/quiz"})
+public class ControlServlet extends HttpServlet {
+    private DBhandler database;
+    
+    @Override
+    public void init() {
+    	database = new DBhandler();
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,18 +38,37 @@ public class HTTPHandler extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet HTTPHandler</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet HTTPHandler at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        HttpSession session = request.getSession(true);
+        
+        UserBean user = (UserBean) session.getAttribute("UserBean");
+        String username = request.getParameter("Username");
+        String password = request.getParameter("Password");
+        
+        // New user!
+        if (user == null) {
+            user = new UserBean();
+            session.setAttribute("UserBean", user);
+            response.sendRedirect("login.jsp");
         }
+        
+        // Logout
+        if (session.getAttribute("LogOut").equals("true")) {
+            session.setAttribute("UserBean", null);
+            response.sendRedirect("login.jsp");
+        }
+        
+        // Login
+        // Replace by database access
+        if (username.equals("Alexlu@kth.se") && password.equals("Alexlu")) {
+            session.setAttribute("UserBean", user);           
+            response.sendRedirect("home.jsp");
+        }
+        else {
+            session.setAttribute("SessionStatus", "Error");
+            response.sendRedirect("login.jsp");
+        }
+        
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

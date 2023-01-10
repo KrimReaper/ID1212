@@ -91,7 +91,7 @@ public class RequestHandler implements Runnable{
         String cookie = request.getCookie();
         GameSession currentSession = this.model.getSession(cookie);
         
-        // No cookie
+        // No cookie, new client!
         if (cookie.isEmpty()) {
             System.out.println("[RequestHandler]: No cookie, creating new cookie and session!");
             String newCookie = generateCookie();
