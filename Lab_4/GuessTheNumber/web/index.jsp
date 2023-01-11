@@ -13,17 +13,25 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Guess The Number Game</title>
+        <title>Guess Game</title>
+        <!-- Bootstrap latest compiled and minified core CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" 
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" 
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     </head>
     <body>
+        <h2>ID1212: Lab 4</h2>
+        <h4>The Number Guess Game</h4>
         <div id="message">
             <%-- Conditional rendering based on session attributes --%>
             <%  
-                if (request.getSession(false).getAttribute("GuessBean") == null) {
+                if (request.getSession().getAttribute("GuessBean") == null) {
                     out.print("Welcome to the Number Guess Game. Guess a number between 1 and 100.");
                 }
                 else {
-                    String answer = (String) request.getSession(false).getAttribute("Answer");
+                    String answer = (String) request.getSession().getAttribute("Answer");
                     switch (answer) {
                         case "NO GUESS":
                             out.print("Welcome to the Number Guess Game. Guess a number between 1 and 100.");
@@ -45,15 +53,15 @@
                             break;
                     }
                     if (!answer.equals("CORRECT")) {
-                        out.print("<br>You have made " + (int) request.getSession(false).getAttribute("AmountOfGuesses") + " guess(es).");
+                        out.print("<br>You have made " + (int) request.getSession().getAttribute("AmountOfGuesses") + " guess(es).");
                     }
                 }
             %>
         </div>
         <%-- submit calls the HTTPHandler.java method doGet() to handle the guess --%>
-        <form id="form" action="HTTPHandler" method="GET" >
-            <input type="text" name="guess">
-            <input type="submit" value="Guess">
+        <form id="form" action="HTTPHandler" method="GET">
+            <input type="text" name="guess" placeholder="Enter a number...">
+            <input type="submit" value="Submit">
         </form>
     </body>
 </html>

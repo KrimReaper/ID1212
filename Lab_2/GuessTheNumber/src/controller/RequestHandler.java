@@ -91,7 +91,7 @@ public class RequestHandler implements Runnable{
         String cookie = request.getCookie();
         GameSession currentSession = this.model.getSession(cookie);
         
-        // No cookie
+        // No cookie, new client!
         if (cookie.isEmpty()) {
             System.out.println("[RequestHandler]: No cookie, creating new cookie and session!");
             String newCookie = generateCookie();
@@ -143,7 +143,7 @@ public class RequestHandler implements Runnable{
         String guess;
         String[] value = URI.split("=");
         try {
-            if (value.length != 2) {
+            if (value.length != 2 && URI.startsWith("/?guess")) {
                 guess = "MALFORMED";
             }
             else if (Integer.parseInt(value[1]) < 1 || Integer.parseInt(value[1]) > 100) {
