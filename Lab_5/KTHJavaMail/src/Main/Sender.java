@@ -31,7 +31,7 @@ public class Sender {
         //Console console = System.console();
         username = "rshojaei";
                 //console.readLine("Type your Username:  ");
-        password =  "Zlatan81";
+        password =  "";
                 //new String(console.readPassword("Your Password:  "));
         
         //Properties field is created
