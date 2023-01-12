@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class UserBean implements Serializable {
     private String username;
     private String password;
+    private String result;
     
     /**
      * No-argument constructor for the Bean.

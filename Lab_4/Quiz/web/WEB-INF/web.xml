@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>ControlServlet</servlet-name>
-        <servlet-class>controller.ControlServlet</servlet-class>
+        <servlet-name>SessionController</servlet-name>
+        <servlet-class>controller.SessionController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GameController</servlet-name>
+        <servlet-class>controller.GameController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QuizController</servlet-name>
+        <servlet-class>controller.QuizController</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ControlServlet</servlet-name>
-        <url-pattern>/ControlServlet</url-pattern>
+        <servlet-name>SessionController</servlet-name>
+        <url-pattern>/SessionController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GameController</servlet-name>
+        <url-pattern>/GameController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QuizController</servlet-name>
+        <url-pattern>/QuizController</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

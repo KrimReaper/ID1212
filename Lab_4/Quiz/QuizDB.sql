@@ -6,11 +6,11 @@
    game and populates it with data.
 */
 
---DROP TABLE results;
---DROP TABLE selector;
---DROP TABLE questions;
---DROP TABLE users;
---DROP TABLE quizzes;
+DROP TABLE IF EXISTS results;
+DROP TABLE IF EXISTS selector;
+DROP TABLE IF EXISTS questions;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS quizzes;
 
 CONNECT 'jdbc:derby:test;create=true;user=nbuser;password=nbuser';
 -- Above command in NetBeans

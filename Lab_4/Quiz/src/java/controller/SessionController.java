@@ -11,14 +11,12 @@ import javax.servlet.http.HttpSession;
 import model.UserBean;
 
 /**
- * This servlet acts like an overarching controller for the webapplication. Since
- * the project is so small it is not necessary to have a controller for each 
- * logic unit.
+ * Controller servlet that handles login and logout requests.
  * 
- * @author Alexander Lundqvist & Ramin Shojaei
+ * @author Alexander Lundqvist & Ramin Shojaeis
  */
-@WebServlet(name = "Controller", urlPatterns = {"/quiz"})
-public class ControlServlet extends HttpServlet {
+@WebServlet(name = "SessionController", urlPatterns = {"/SessionController"})
+public class SessionController extends HttpServlet {
     private DBhandler database;
     
     @Override
@@ -41,31 +39,29 @@ public class ControlServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         
         UserBean user = (UserBean) session.getAttribute("UserBean");
-        String username = request.getParameter("Username");
-        String password = request.getParameter("Password");
-        
-        // New user!
-        if (user == null) {
-            user = new UserBean();
-            session.setAttribute("UserBean", user);
-            response.sendRedirect("login.jsp");
-        }
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String logout = request.getParameter("logout");
         
         // Logout
-        if (session.getAttribute("LogOut").equals("true")) {
+        if (user != null && logout != null) {
             session.setAttribute("UserBean", null);
-            response.sendRedirect("login.jsp");
-        }
-        
-        // Login
-        // Replace by database access
-        if (username.equals("Alexlu@kth.se") && password.equals("Alexlu")) {
-            session.setAttribute("UserBean", user);           
-            response.sendRedirect("home.jsp");
+            session.setAttribute("SessionStatus", "LoggedOut");
+            response.sendRedirect("index.jsp");
         }
         else {
-            session.setAttribute("SessionStatus", "Error");
-            response.sendRedirect("login.jsp");
+            if (user == null) {
+                session.setAttribute("UserBean", new UserBean());
+            }
+            if (username != null && username.equals("Alexlu@kth.se") && password != null && password.equals("Alexlu")) {
+                session.setAttribute("UserBean", user);
+                session.setAttribute("SessionStatus", "LoggedIn");
+                response.sendRedirect("home.jsp");
+            }
+            else {
+                session.setAttribute("SessionStatus", "Error");
+                response.sendRedirect("index.jsp");
+            }
         }
         
         

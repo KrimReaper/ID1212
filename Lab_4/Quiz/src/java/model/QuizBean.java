@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class QuizBean implements Serializable {
     private int id;
     private String subject;
+    private String[] options;
     
     /**
      * No-argument constructor for the Bean.
