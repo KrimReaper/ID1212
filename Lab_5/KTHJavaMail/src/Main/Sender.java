@@ -28,11 +28,9 @@ public class Sender {
     
     //Insert your username and password
     public static void main(String[] args) {
-        //Console console = System.console();
-        username = "rshojaei";
-                //console.readLine("Type your Username:  ");
-        password =  "";
-                //new String(console.readPassword("Your Password:  "));
+        Console console = System.console();
+        console.readLine("Type your Username:  "); 
+        new String(console.readPassword("Your Password:  "));
         
         //Properties field is created
         Properties properties = new Properties();
